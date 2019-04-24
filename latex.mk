@@ -11,7 +11,7 @@ all: $(addsuffix .pdf,$(DOCUMENTS))
 
 %.pdf: %.tex $(wildcard *.tex)
 	$(LATEX) $(LATEXFLAGS) $*
-	grep -q '^\\bibdata{' $*.aux && $(BIBTEX) $(BIBTEXFLAGS) $* || true
+	(grep -q '^\\bibdata{' $*.aux || [ -f $*.bcf ]; ) && $(BIBTEX) $(BIBTEXFLAGS) $* || true
 	grep -q '\@istfilename' $*.aux && $(MAKEGLOSSARIES) $(MAKEGLOSSARIESFLAGS) $* || true
 	[ -f $*.idx ] && $(MAKEINDEX) $(MAKEINDEXFLAGS) $* || true
 	$(LATEX) $(LATEXFLAGS) $*
@@ -21,7 +21,7 @@ clean: $(addprefix clean-,$(DOCUMENTS))
 	$(RM) texput.log
 
 clean-%:
-	$(RM) $(addprefix $*.,acn acr alg aux bbl blg fmt glg glo gls idx ilg ind ist loa lof log lol lot nav out snm tdo toc vrb)
+	$(RM) $(addprefix $*.,acn acr alg aux bbl bcf blg fmt glg glo gls idx ilg ind ist loa lof log lol lot nav out snm tdo toc vrb run.xml)
 
 clobber: clean
 	$(RM) -i *.pdf
